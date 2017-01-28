@@ -62,8 +62,8 @@
       <file leaf-file-name="2.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/2.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="883">
-              <caret line="80" column="0" lean-forward="true" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+            <state relative-caret-position="237">
+              <caret line="43" column="16" lean-forward="false" selection-start-line="43" selection-start-column="16" selection-end-line="43" selection-end-column="16" />
               <folding>
                 <element signature="e#119#137#0" expanded="true" />
               </folding>
@@ -372,12 +372,12 @@
       <updated>1485450672509</updated>
       <workItem from="1485450676062" duration="2239000" />
       <workItem from="1485453311369" duration="1482000" />
-      <workItem from="1485557208059" duration="23766000" />
+      <workItem from="1485557208059" duration="23993000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="27487000" />
+    <option name="totallyTimeSpent" value="27714000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-4" y="0" width="1928" height="1052" extended-state="6" />
@@ -485,8 +485,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/2.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="883">
-          <caret line="80" column="0" lean-forward="true" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+        <state relative-caret-position="237">
+          <caret line="43" column="16" lean-forward="false" selection-start-line="43" selection-start-column="16" selection-end-line="43" selection-end-column="16" />
           <folding>
             <element signature="e#119#137#0" expanded="true" />
           </folding>

@@ -37,11 +37,11 @@ int main() {
 
         for (int i = 0; i < M; i++) {
             raw0 = __builtin_ia32_loadups(b[0]);
-            raw0 = __builtin_ia32_loadups(b[1]);
-            raw0 = __builtin_ia32_loadups(b[2]);
-            raw0 = __builtin_ia32_loadups(b[3]);
-            raw0 = __builtin_ia32_loadups(b[4]);
-            raw0 = __builtin_ia32_loadups(b[5]);
+            raw1 = __builtin_ia32_loadups(b[1]);
+            raw2 = __builtin_ia32_loadups(b[2]);
+            raw3 = __builtin_ia32_loadups(b[3]);
+            raw4 = __builtin_ia32_loadups(b[4]);
+            raw5 = __builtin_ia32_loadups(b[5]);
 
             memsetf(temp, a[i][0]);
             cur_a = __builtin_ia32_loadups(temp);
@@ -78,6 +78,20 @@ int main() {
 
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     return 0;
 }
