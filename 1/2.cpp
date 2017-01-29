@@ -25,65 +25,243 @@ int main() {
     __builtin_cpu_init();
 
     float** a = matrix_alloc(); randomize_matrix(a);
-//    printf("A:\n"); print_matrix(a);
+    printf("A:\n"); print_matrix(a);
     float** b = matrix_alloc(); randomize_matrix(b);
-//    printf("B:\n"); print_matrix(b);
+    printf("B:\n"); print_matrix(b);
     float** c = matrix_alloc();
     float* temp = (float*)aligned_alloc(MEM_ALIGN, 4 * sizeof(float));
 
-    v4sf raw0, raw1, raw2, raw3, raw4, raw5, cur_a;
+    // c[6x4]
+    for(int i = 0; i < M; i++) {
 
-    for(int k = 0; k < 100000; k++) {
+    	printf("temp = %p\n a = %p\n b = %p\n c = %p\n\n", temp, a[i], b, c[i]);
+        asm volatile
+        (
+        	// xmm0-xmm5 == b[6x4]
+            "movl (%%edx), %%eax;"
+            "movups (%%eax), %%xmm0;"
+            
+            "movl 8(%%edx), %%eax;"
+            "movups (%%eax), %%xmm1;"
+            
+            "movl 16(%%edx), %%eax;"
+            "movups (%%eax), %%xmm2;"
+            
+            "movl 24(%%edx), %%eax;"
+            "movups (%%eax), %%xmm3;"
 
-        for (int i = 0; i < M; i++) {
-            raw0 = __builtin_ia32_loadups(b[0]);
-            raw1 = __builtin_ia32_loadups(b[1]);
-            raw2 = __builtin_ia32_loadups(b[2]);
-            raw3 = __builtin_ia32_loadups(b[3]);
-            raw4 = __builtin_ia32_loadups(b[4]);
-            raw5 = __builtin_ia32_loadups(b[5]);
+            "movl 32(%%edx), %%eax;"
+            "movups (%%eax), %%xmm4;"
 
-            memsetf(temp, a[i][0]);
-            cur_a = __builtin_ia32_loadups(temp);
-            raw0 = __builtin_ia32_mulps(raw0, cur_a);
+            "movl 40(%%edx), %%eax;"
+            "movups (%%eax), %%xmm5;"
 
-            memsetf(temp, a[i][1]);
-            cur_a = __builtin_ia32_loadups(temp);
+            //xmm0 * a[i][0]
+            "movl 0(%%ecx), %%eax;"
+            "movl %%eax, 0(%1);"
+            "movl %%eax, 4(%1);"
+            "movl %%eax, 8(%1);"
+            "movl %%eax, 12(%1);"
 
-            raw1 = __builtin_ia32_mulps(raw1, cur_a);
+            "movups (%1), %%xmm6;"
+            "mulps %%xmm6, %%xmm0;"
 
-            memsetf(temp, a[i][2]);
-            cur_a = __builtin_ia32_loadups(temp);
-            raw2 = __builtin_ia32_mulps(raw2, cur_a);
+            //xmm1 * a[i][1]
+            "movl 4(%%ecx), %%eax;"
+            "movl %%eax, 0(%1);"
+            "movl %%eax, 4(%1);"
+            "movl %%eax, 8(%1);"
+            "movl %%eax, 12(%1);"
 
-            memsetf(temp, a[i][3]);
-            cur_a = __builtin_ia32_loadups(temp);
-            raw3 = __builtin_ia32_mulps(raw3, cur_a);
+            "movups (%1), %%xmm6;"
+            "mulps %%xmm6, %%xmm1;"
 
-            memsetf(temp, a[i][4]);
-            cur_a = __builtin_ia32_loadups(temp);
-            raw4 = __builtin_ia32_mulps(raw4, cur_a);
+            //xmm2 * a[i][2]
+            "movl 8(%%ecx), %%eax;"
+            "movl %%eax, 0(%1);"
+            "movl %%eax, 4(%1);"
+            "movl %%eax, 8(%1);"
+            "movl %%eax, 12(%1);"
 
-            memsetf(temp, a[i][5]);
-            cur_a = __builtin_ia32_loadups(temp);
-            raw5 = __builtin_ia32_mulps(raw5, cur_a);
+            "movups (%1), %%xmm6;"
+            "mulps %%xmm6, %%xmm2;"
 
-            raw4 = __builtin_ia32_addps(raw4, raw5);
-            raw3 = __builtin_ia32_addps(raw3, raw4);
-            raw2 = __builtin_ia32_addps(raw2, raw3);
-            raw1 = __builtin_ia32_addps(raw1, raw2);
-            raw0 = __builtin_ia32_addps(raw0, raw1);
+            //xmm3 * a[i][3]
+            "movl 12(%%ecx), %%eax;"
+            "movl %%eax, 0(%1);"
+            "movl %%eax, 4(%1);"
+            "movl %%eax, 8(%1);"
+            "movl %%eax, 12(%1);"
 
-            __builtin_ia32_storeups(c[i], raw0);
+            "movups (%1), %%xmm6;"
+            "mulps %%xmm6, %%xmm3;"
 
-        }
+            //xmm4 * a[i][4]
+            "movl 16(%%ecx), %%eax;"
+            "movl %%eax, 0(%1);"
+            "movl %%eax, 4(%1);"
+            "movl %%eax, 8(%1);"
+            "movl %%eax, 12(%1);"
+
+            "movups (%1), %%xmm6;"
+            "mulps %%xmm6, %%xmm4;"
+
+            //xmm5 * a[i][5]
+            "movl 20(%%ecx), %%eax;"
+            "movl %%eax, 0(%1);"
+            "movl %%eax, 4(%1);"
+            "movl %%eax, 8(%1);"
+            "movl %%eax, 12(%1);"
+
+            "movups (%1), %%xmm6;"
+            "mulps %%xmm6, %%xmm5;"
+
+            //sum (xmm0 - xmm1) == c[i]
+            "addps %%xmm5, %%xmm4;"
+            "addps %%xmm4, %%xmm3;"
+            "addps %%xmm3, %%xmm2;"
+            "addps %%xmm2, %%xmm1;"
+            "addps %%xmm1, %%xmm0;"
+ 
+ 			"movups %%xmm0, (%0);"
+            :
+            :
+            "r"(c[i]),
+            "r"(temp),
+            "c"(a[i]),
+            "d"(b)
+            :
+            "%eax",
+            "%ebx",
+            "%xmm0",
+            "%xmm1",
+            "%xmm2",
+            "%xmm3",
+            "%xmm4",
+            "%xmm5",
+            "%xmm6"
+
+        );
+        printf("temp = %p\n a = %p\n b = %p\n c = %p\n\n", temp, a[i], b, c[i]);
+    }
+
+    // c[6x2]
+    for(int i = 0; i < M; i++) {
+
+    	printf("temp = %p\n a = %p\n b = %p\n c = %p\n\n", temp, a[i], b, c[i]);
+        asm volatile
+        (
+        	// xmm0-xmm5 == b[6x2]
+            "movl 0(%%edx), %%eax;"
+            "movhps 16(%%eax), %%xmm0;"
+            
+            "movl 8(%%edx), %%eax;"
+            "movhps 16(%%eax), %%xmm1;"
+            
+            "movl 16(%%edx), %%eax;"
+            "movhps 16(%%eax), %%xmm2;"
+            
+            "movl 24(%%edx), %%eax;"
+            "movhps 16(%%eax), %%xmm3;"
+
+            "movl 32(%%edx), %%eax;"
+            "movhps 16(%%eax), %%xmm4;"
+
+            "movl 40(%%edx), %%eax;"
+            "movhps 16(%%eax), %%xmm5;"
+
+            //xmm0 * a[i][0]
+            "movl 0(%%ecx), %%eax;"
+            "movl %%eax, 0(%1);"
+            "movl %%eax, 4(%1);"
+            "movl %%eax, 8(%1);"
+            "movl %%eax, 12(%1);"
+
+            "movups (%1), %%xmm6;"
+            "mulps %%xmm6, %%xmm0;"
+
+            //xmm1 * a[i][1]
+            "movl 4(%%ecx), %%eax;"
+            "movl %%eax, 0(%1);"
+            "movl %%eax, 4(%1);"
+            "movl %%eax, 8(%1);"
+            "movl %%eax, 12(%1);"
+
+            "movups (%1), %%xmm6;"
+            "mulps %%xmm6, %%xmm1;"
+
+            //xmm2 * a[i][2]
+            "movl 8(%%ecx), %%eax;"
+            "movl %%eax, 0(%1);"
+            "movl %%eax, 4(%1);"
+            "movl %%eax, 8(%1);"
+            "movl %%eax, 12(%1);"
+
+            "movups (%1), %%xmm6;"
+            "mulps %%xmm6, %%xmm2;"
+
+            //xmm3 * a[i][3]
+            "movl 12(%%ecx), %%eax;"
+            "movl %%eax, 0(%1);"
+            "movl %%eax, 4(%1);"
+            "movl %%eax, 8(%1);"
+            "movl %%eax, 12(%1);"
+
+            "movups (%1), %%xmm6;"
+            "mulps %%xmm6, %%xmm3;"
+
+            //xmm4 * a[i][4]
+            "movl 16(%%ecx), %%eax;"
+            "movl %%eax, 0(%1);"
+            "movl %%eax, 4(%1);"
+            "movl %%eax, 8(%1);"
+            "movl %%eax, 12(%1);"
+
+            "movups (%1), %%xmm6;"
+            "mulps %%xmm6, %%xmm4;"
+
+            //xmm5 * a[i][5]
+            "movl 20(%%ecx), %%eax;"
+            "movl %%eax, 0(%1);"
+            "movl %%eax, 4(%1);"
+            "movl %%eax, 8(%1);"
+            "movl %%eax, 12(%1);"
+
+            "movups (%1), %%xmm6;"
+            "mulps %%xmm6, %%xmm5;"
+
+            //sum (xmm0 - xmm1) == c[i]
+            "addps %%xmm5, %%xmm4;"
+            "addps %%xmm4, %%xmm3;"
+            "addps %%xmm3, %%xmm2;"
+            "addps %%xmm2, %%xmm1;"
+            "addps %%xmm1, %%xmm0;"
+ 
+ 			"movhps %%xmm0, (%0);"
+            :
+            :
+            "r"(c[i] + 4),
+            "r"(temp),
+            "c"(a[i]),
+            "d"(b)
+            :
+            "%eax",
+            "%ebx",
+            "%xmm0",
+            "%xmm1",
+            "%xmm2",
+            "%xmm3",
+            "%xmm4",
+            "%xmm5",
+            "%xmm6"
+
+        );
+        printf("temp = %p\n a = %p\n b = %p\n c = %p\n\n", temp, a[i], b, c[i]);
     }
 
 
-
-
-
-
+    printf("C:\n");
+    print_matrix(c);
 
 
 
@@ -98,7 +276,7 @@ int main() {
 
 float** matrix_alloc()
 {
-    float** result = (float**)malloc(M * sizeof(float*));
+    float** result = (float**)aligned_alloc(MEM_ALIGN, M * sizeof(float*));
     for(int i = 0; i < M; i++) {
         result[i] = (float*)aligned_alloc(MEM_ALIGN, N * sizeof(float));
     }
